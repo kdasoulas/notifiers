@@ -1,6 +1,7 @@
 import getpass
 import smtplib
 import socket
+import re
 from email.message import EmailMessage
 from email.mime.application import MIMEApplication
 from email.utils import formatdate
@@ -70,7 +71,7 @@ class SMTP(Provider):
             "ssl": {"type": "boolean", "title": "should SSL be used"},
             "html": {
                 "type": "boolean",
-                "title": "should the email be parse as an HTML file",
+                "title": "should the email be parsed as an HTML file",
             },
         },
         "dependencies": {
@@ -122,7 +123,9 @@ class SMTP(Provider):
         for attachment in data["attachments"]:
             file = Path(attachment).read_bytes()
             part = MIMEApplication(file)
-            part.add_header("Content-Disposition", "attachment", filename=attachment)
+            part.add_header("Content-Disposition", "attachment", filename=attachment
+            [attachment.rfind(re.findall(r'(/|\\)', attachment)[-1]) + 1 
+                if len(re.findall(r'(/|\\)', attachment)) > 0 else 0:])
             email.attach(part)
         return email
 
